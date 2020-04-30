@@ -79,6 +79,7 @@ class R_CLSTM_5(nn.Module):
             output_inner.append(p_depth)
 
         layer_out = torch.stack(output_inner, dim=2)
+        #测试时间的代码 等待GPU
         torch.cuda.synchronize()
 
         return layer_out
