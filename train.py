@@ -9,15 +9,15 @@ import torch.backends.cudnn as cudnn
 from torch.autograd import Variable
 from tensorboardX import SummaryWriter
 from utils import *
-from options import get_args
+from options.trainopt import _get_train_opt
 import nyudv2_dataloader
 from loss import cal_spatial_loss, cal_temporal_loss
-
+from resnet import resnet18
 import modules
 import net
 
 cudnn.benchmark = True
-args = get_args('train')
+args = _get_train_opt
 
 os.environ['CUDA_VISIBLE_DEVICES'] = args.devices
 
@@ -29,8 +29,7 @@ logger = SummaryWriter(args.logdir)
 TrainImgLoader = nyudv2_dataloader.getTrainingData_NYUDV2(args.batch_size, args.trainlist_path, args.root_path)
 device = 'cuda' if torch.cuda.is_available() and args.use_cuda else 'cpu'
 
-backbone = backbone_dict[args.backbone]()
-Encoder = modules.E_resnet(backbone)
+Encoder = modules.E_resnet(resnet18)
 
 if args.backbone in ['resnet50']:
     model = net.model(Encoder, num_features=2048, block_channel=[256, 512, 1024, 2048], refinenet=args.refinenet)
